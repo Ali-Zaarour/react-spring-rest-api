@@ -9,6 +9,8 @@ public class Constants {
 
     public static  final String SECURITY_ATTRIBUTE_TOKEN ="token";
 
+    public static final String SECURITY_ATTRIBUTE_AUTHORIZATION = "Authorization";
+
     public static final String ERROR_ATTRIBUTE_X_ERROR_MESSAGE = "X-Error-Message";
 
     public static final  String JWT_SUBJECT = "User Details";

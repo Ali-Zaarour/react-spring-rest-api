@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class SignupRequest {
+public class LoginCredentials {
     @Email
     private String username;
     @NotNull

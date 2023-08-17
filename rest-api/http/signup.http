@@ -1,8 +1,0 @@
-### Create new user
-POST http://localhost:8080/uni-api/auth/signup
-Content-Type: application/json
-
-{
-  "username": "a5z@gmail.com",
-  "password": "password"
-}

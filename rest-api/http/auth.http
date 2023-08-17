@@ -1,0 +1,21 @@
+### Signup
+POST http://localhost:8080/uni-api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "ali@gmail.com",
+  "password": "123456789"
+}
+
+### Login
+POST http://localhost:8080/uni-api/auth/login
+Content-Type: application/json
+
+{
+  "username": "ali@gmail.com",
+  "password": "123456789"
+}
+
+### Test
+GET http://localhost:8080/uni-api/Hello
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJhcHBVc2VySWQiOiJiY2JhYjZjOC1kMTU5LTQ0ZWEtYjFmYy05NDIzOGE0YTI2N2EiLCJ1c2VybmFtZSI6ImFsaUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2OTIyNzM1MDcsImV4cCI6MTcwODE4MTkwNywiaXNzIjoic3ByaW5nLWRlbW8vcmVzdC1hcGkvdW5pLWFwaSJ9.ePXpGHzHRG4OnaSyu0NsSOzzJicavY-yG_303Mi-T1k

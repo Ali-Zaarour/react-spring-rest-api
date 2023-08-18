@@ -60,7 +60,7 @@ public class AuthController {
         return createdUser.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.CONFLICT)
-                        .header(Constants.ERROR_ATTRIBUTE_X_ERROR_MESSAGE,"User already exists.")
+                        .header(Constants.ERROR_ATTRIBUTE_X_ERROR_MESSAGE,"Conflict / incorrect info")
                         .build());
     }
 

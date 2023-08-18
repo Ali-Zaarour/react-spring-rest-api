@@ -5,6 +5,12 @@ import example.restapi.payload.LoginCredentials;
 import example.restapi.payload.SignupRequest;
 import example.restapi.services.AuthService;
 import example.restapi.utils.Constants;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/uni-api/auth")
+@Tag(name ="Auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -23,6 +30,30 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(
+            description = "Signup endpoint",
+            summary = "Create new application user",
+            responses = {
+                @ApiResponse(
+                        description = "Success / user created",
+                        responseCode = "200",
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = AppUserDTO.class))),
+                @ApiResponse(
+                        description = "Conflict / incorrect info",
+                        responseCode = "409",
+                        content = @Content),
+                @ApiResponse(
+                        description = "Unauthorized / payload data validation problem",
+                        responseCode = "401",
+                        content = @Content)
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = SignupRequest.class))))
     @PostMapping("/signup")
     public ResponseEntity<AppUserDTO> signup(@Valid @RequestBody SignupRequest signupRequest){
         var createdUser = authService.createUser(signupRequest);
@@ -33,6 +64,34 @@ public class AuthController {
                         .build());
     }
 
+    @Operation(
+            description = "Login endpoint",
+            summary = "Gain access to uni-api by providing valid credentials",
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = AppUserDTO.class)),
+                            headers = @Header(
+                                    name ="token",
+                                    description = "user jwt access token",
+                                    schema = @Schema(implementation = String.class))),
+                    @ApiResponse(
+                            description = "Forbidden / username or password incorrect",
+                            responseCode = "403",
+                            content = @Content),
+                    @ApiResponse(
+                            description = "Unauthorized / payload data validation problem",
+                            responseCode = "401",
+                            content = @Content)
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = LoginCredentials.class))))
     @PostMapping("/login")
     public ResponseEntity<AppUserDTO> login(@Valid @RequestBody LoginCredentials loginCredentials){
         var loginToken = authService.login(loginCredentials);

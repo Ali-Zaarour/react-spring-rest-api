@@ -32,7 +32,11 @@ public class SecurityConfig{
                 .httpBasic(AbstractHttpConfigurer::disable)// Disabling http basic
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
-                        .requestMatchers("/uni-api/auth/**").permitAll()
+                        .requestMatchers(
+                                "/uni-api/auth/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**"
+                        ).permitAll()
                         .anyRequest().authenticated())
                 // Adding the JWT filter
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

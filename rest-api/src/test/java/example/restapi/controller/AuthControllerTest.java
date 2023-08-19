@@ -63,7 +63,7 @@ public class AuthControllerTest {
      */
     @Test
     void shouldReturnAppUserDtoWhenUserIsCreatedOrConflictIfAlreadyExist() {
-        var signupRequest = new SignupRequest("al@gmail.com", "password");
+        var signupRequest = SignupRequest.builder().username("al@gmail.com").password("password").build();
         ResponseEntity<String> response = testRestTemplate.postForEntity(REQUEST_MAPPING_VALUE +"/signup", signupRequest, String.class);
         //condition of request is created -> status code = 200 ok
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -98,7 +98,7 @@ public class AuthControllerTest {
      */
     @Test
     void shouldReturnUnauthorizedWhenAnyOfRequestValueIsNotValid_SignUpParam(){
-        var signupRequest = new SignupRequest("dc","123456789");
+        var signupRequest = SignupRequest.builder().username("dc").password("123456789").build();
         ResponseEntity<String> createResponse = testRestTemplate.postForEntity(REQUEST_MAPPING_VALUE+"/signup",signupRequest,String.class);
         assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
@@ -121,14 +121,14 @@ public class AuthControllerTest {
      *     <li>User already exist in db</li>
      *     In case of a problem with username {@link LoginCredentials#username} not exist, or password {@link LoginCredentials#password} not correct base
      *     on argon2 algo {@link org.springframework.security.crypto.argon2.Argon2PasswordEncoder @Argon2PasswordEncoder}.
-     *     Status code
+     *     Status code {@link HttpStatus#UNAUTHORIZED @401_UNAUTHORIZED}
      * </ol></p>
      *
-     * @return {@link HttpStatus#OK} or {@link HttpStatus#FORBIDDEN}
+     * @return {@link HttpStatus#OK} or {@link HttpStatus#UNAUTHORIZED}
      */
     @Test
     void shouldReturnAppUserDTOWithToken(){
-        var loginCredentials = new LoginCredentials("ali@gmail.com","123456789");
+        var loginCredentials = new LoginCredentials("al@gmail.com","password");
         ResponseEntity<String> loginResponse = testRestTemplate.postForEntity(REQUEST_MAPPING_VALUE+"/login",loginCredentials,String.class);
         //condition of login is done -> status code = 200 ok
         if(loginResponse.getStatusCode() == HttpStatus.OK){
@@ -136,14 +136,14 @@ public class AuthControllerTest {
             //verifies body data {user info}
             DocumentContext documentContext = JsonPath.parse(loginResponse.getBody());
             String username = documentContext.read("$.username");
-            assertThat(username).isEqualTo("ali@gmail.com");
+            assertThat(username).isEqualTo("al@gmail.com");
             //verifies header data {token exist}
             String token = loginResponse.getHeaders().getFirst(Constants.SECURITY_ATTRIBUTE_TOKEN);
             assertThat(token).isNotEmpty();
         }else{
             // condition of user don't exist or password is not valid base on argon2 encoder
-            // status code = 403 forbidden
-            assertThat(loginResponse.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+            // status code = 401 unauthorized
+            assertThat(loginResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         }
     }
     /**

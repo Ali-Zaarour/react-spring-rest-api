@@ -48,10 +48,10 @@ public class SecurityConfigTest {
     void shouldPublicEndpointsBeAccessible() throws Exception{
         mockMvc.perform(MockMvcRequestBuilders.post(REQUEST_MAPPING_VALUE+"/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(new SignupRequest("malek@gmail.com","123456"))))
+                        .content(new ObjectMapper().writeValueAsString(SignupRequest.builder().username("Y@gmail.com").password("123456789").build())))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.username").value("malek@gmail.com"))
+                .andExpect(jsonPath("$.username").value("Y@gmail.com"))
                 .andExpect(header().exists(Constants.SECURITY_ATTRIBUTE_TOKEN));
     }
 
@@ -64,7 +64,7 @@ public class SecurityConfigTest {
     void shouldPrivateEndpointsBeAuthenticateWithToken() throws Exception{
         mockMvc.perform(MockMvcRequestBuilders.get(REQUEST_MAPPING_VALUE+"/Hello")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(Constants.SECURITY_ATTRIBUTE_AUTHORIZATION,"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJhcHBVc2VySWQiOiJiY2JhYjZjOC1kMTU5LTQ0ZWEtYjFmYy05NDIzOGE0YTI2N2EiLCJ1c2VybmFtZSI6ImFsaUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2OTIyNzM1MDcsImV4cCI6MTcwODE4MTkwNywiaXNzIjoic3ByaW5nLWRlbW8vcmVzdC1hcGkvdW5pLWFwaSJ9.ePXpGHzHRG4OnaSyu0NsSOzzJicavY-yG_303Mi-T1k"))
+                .header(Constants.SECURITY_ATTRIBUTE_AUTHORIZATION,"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJ1c2VybmFtZSI6IllAZ21haWwuY29tIiwiaWF0IjoxNjkyNDgxMzQyLCJleHAiOjE3MDgzODk3NDIsImlzcyI6InNwcmluZy1kZW1vL3Jlc3QtYXBpL3VuaS1hcGkifQ.2w_RhDQ047Exc4_u-FtZSw2WvnaRKO__WdhshYxX7Yc"))
                 .andExpect(status().isOk());
 
     }

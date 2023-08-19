@@ -79,10 +79,6 @@ public class AuthController {
                                     description = "user jwt access token",
                                     schema = @Schema(implementation = String.class))),
                     @ApiResponse(
-                            description = "Forbidden / username or password incorrect",
-                            responseCode = "403",
-                            content = @Content),
-                    @ApiResponse(
                             description = "Unauthorized / payload data validation problem",
                             responseCode = "401",
                             content = @Content)

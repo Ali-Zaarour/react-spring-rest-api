@@ -1,5 +1,6 @@
 package example.restapi.configurations;
 
+import example.restapi.exception.config.ExceptionMessageConstant;
 import example.restapi.repositories.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +26,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService(){
         return username -> appUserRepository.findAppUsersByUsername(username)
-                .orElseThrow(()-> new UsernameNotFoundException("User not found"));
+                .orElseThrow(()-> new UsernameNotFoundException(ExceptionMessageConstant.USERNAME_NOT_FOUND));
     }
 
     @Bean

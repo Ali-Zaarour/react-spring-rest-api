@@ -21,12 +21,15 @@ public class JWTUtil {
     @Value("${jwt.secret}")
     private String secret;
 
+    @Value("${jwt.expire.month}")
+    private int expireMonth;
+
     public String generateJWTToken(UserDetails userDetails)  throws IllegalArgumentException, JWTCreationException {
         return JWT.create()
                 .withSubject(Constants.JWT_SUBJECT)
                 .withClaim(Constants.JWT_CLAIM_USERNAME,userDetails.getUsername())
                 .withIssuedAt(new Date(System.currentTimeMillis()))
-                .withExpiresAt(Date.from(LocalDateTime.now().plusMonths(6).toInstant(ZoneOffset.UTC)))
+                .withExpiresAt(Date.from(LocalDateTime.now().plusMonths(expireMonth).toInstant(ZoneOffset.UTC)))
                 .withIssuer(Constants.JWT_ISSUER)
                 .sign(Algorithm.HMAC256(secret));
     }

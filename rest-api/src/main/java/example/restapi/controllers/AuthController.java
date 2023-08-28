@@ -1,6 +1,8 @@
 package example.restapi.controllers;
 
 import example.restapi.dto.AppUserDTO;
+import example.restapi.exception.config.ErrorStruct;
+import example.restapi.exception.config.ExceptionMessageConstant;
 import example.restapi.payload.LoginCredentials;
 import example.restapi.payload.SignupRequest;
 import example.restapi.services.AuthService;
@@ -13,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +46,9 @@ public class AuthController {
                 @ApiResponse(
                         description = "Conflict / incorrect info",
                         responseCode = "409",
-                        content = @Content),
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorStruct.class))),
                 @ApiResponse(
                         description = "Unauthorized / payload data validation problem",
                         responseCode = "401",
@@ -58,10 +63,7 @@ public class AuthController {
     public ResponseEntity<AppUserDTO> signup(@Valid @RequestBody SignupRequest signupRequest){
         var createdUser = authService.createUser(signupRequest);
         return createdUser.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity
-                        .status(HttpStatus.CONFLICT)
-                        .header(Constants.ERROR_ATTRIBUTE_X_ERROR_MESSAGE,"Conflict / incorrect info")
-                        .build());
+                .orElseThrow(() -> new DataIntegrityViolationException(ExceptionMessageConstant.DATA_INTEGRITY_VIOLATION));
     }
 
     @Operation(
@@ -81,7 +83,13 @@ public class AuthController {
                     @ApiResponse(
                             description = "Unauthorized / payload data validation problem",
                             responseCode = "401",
-                            content = @Content)
+                            content = @Content),
+                    @ApiResponse(
+                            description = "Forbidden / user still disabled",
+                            responseCode = "403",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorStruct.class)))
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,

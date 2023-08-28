@@ -1,18 +1,16 @@
 package example.restapi.entity;
 
+import example.restapi.entity.config.BaseEntity;
+import example.restapi.utils.Constants;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -20,23 +18,44 @@ import java.util.UUID;
 @Entity
 @Table(name="app_user")
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class AppUser implements UserDetails {
+@EqualsAndHashCode(callSuper = true)
+public class AppUser extends BaseEntity implements UserDetails {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Timestamp createAt;
-
-    @UpdateTimestamp
-    private Timestamp updatedAt;
-
-    private Timestamp deletedAt;
+    @Builder
+    public AppUser(
+            UUID id,
+            Timestamp deletedAt,
+            String username,
+            String password,
+            AppUserStatus statusId,
+            boolean active,
+            Timestamp lastLoginAt,
+            boolean isVerified,
+            String verificationToken,
+            String resetToken,
+            String firstName,
+            String lastName,
+            LocalDate birthDate,
+            String address,
+            String phoneNumber,
+            List<AppUserRoleMapping> appUserRoleMappings) {
+        super(id, deletedAt);
+        this.username = username;
+        this.password = password;
+        this.statusId = statusId;
+        this.active = active;
+        this.lastLoginAt = lastLoginAt;
+        this.isVerified = isVerified;
+        this.verificationToken = verificationToken;
+        this.resetToken = resetToken;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.appUserRoleMappings = appUserRoleMappings;
+    }
 
     private String username;
 
@@ -66,13 +85,23 @@ public class AppUser implements UserDetails {
 
     private String phoneNumber;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private AppUserRole role;
+    @OneToMany(mappedBy = "appUser",fetch = FetchType.EAGER)
+    private List<AppUserRoleMapping> appUserRoleMappings;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.getKey()));
+
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+
+        for(AppUserRoleMapping appUserRoleMapping : appUserRoleMappings){
+            grantedAuthorities.add(new SimpleGrantedAuthority(
+                    Constants.GRANTED_AUTHORITY_FIRST_KEY +appUserRoleMapping.getAppUserRole().getKey()));
+            for(AppUserPermissionMapping appUserPermissionMapping:  appUserRoleMapping.getAppUserPermissionMappings()){
+                grantedAuthorities.add(new SimpleGrantedAuthority(
+                        appUserPermissionMapping.toString()));
+            }
+        }
+        return grantedAuthorities;
     }
 
     @Override
@@ -93,5 +122,10 @@ public class AppUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String toString(){
+        return "UserId:"+getId()+",Username:"+getUsername();
     }
 }

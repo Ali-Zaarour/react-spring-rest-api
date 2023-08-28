@@ -1,26 +1,23 @@
 package example.restapi.entity;
 
 import example.restapi.entity.config.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
 import java.util.UUID;
 
-
 @Entity
-@Table(name= "app_user_role")
+@Table(name = "app_user_permission")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class AppUserRole extends BaseEntity {
-
+public class AppUserPermission extends BaseEntity {
     @Builder
-    public AppUserRole(UUID id, Timestamp deletedAt, String key) {
+    public AppUserPermission(UUID id, Timestamp deletedAt, String key) {
         super(id, deletedAt);
-        this.Key = key;
+        Key = key;
     }
 
     private String Key;

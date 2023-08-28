@@ -1,32 +1,16 @@
 package example.restapi.entity;
 
-import jakarta.persistence.Column;
+import example.restapi.entity.config.BaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.sql.Timestamp;
-import java.util.UUID;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name= "app_user_status")
 @Data
-public class AppUserStatus {
-
-    @Id
-    private UUID id;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Timestamp createAt;
-
-    @UpdateTimestamp
-    private Timestamp updatedAt;
-
-    private Timestamp deletedAt;
+@EqualsAndHashCode(callSuper = true)
+public class AppUserStatus extends BaseEntity {
 
     private String Key;
 }
